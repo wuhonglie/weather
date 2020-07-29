@@ -11,7 +11,7 @@ class Weather
     protected $key;
     protected $guzzleOptions = [];
 
-    public function __construct(string $key)
+    public function __construct($key)
     {
         $this->key = $key;
     }
@@ -21,7 +21,7 @@ class Weather
         return new Client($this->guzzleOptions);
     }
 
-    public function setGuzzleOptions(array $options)
+    public function setGuzzleOptions($options)
     {
         $this->guzzleOptions = $options;
     }
@@ -29,6 +29,10 @@ class Weather
     public function getWeather($city, $type = 'base', $format = 'json')
     {
         $url = "https://restapi.amap.com/v3/weather/weatherInfo";
+        $types = [
+            'live' => 'base',
+            'forecast' => 'all'
+        ];
         if(!\in_array(\strtolower($format), ['xml','json'])){
             throw new InvalidArgumentException('Invalid response format: '. $format);
         }
@@ -52,5 +56,15 @@ class Weather
 
 
         return 'json' === $format ? \json_decode($response, true) : $response;
+    }
+
+    public function getLiveWeather($city, $format='json')
+    {
+        return $this->getWeather($city, 'base', $format);
+    }
+
+    public function getForecastsWeather($city, $format='json')
+    {
+        return $this->getWeather($city, 'all', $format);
     }
 }
